@@ -27,6 +27,7 @@ original_message = "I like cat"
 
 import re
 from collections import Counter
+from string import ascii_lowercase
 def preprocessing(message):
     ## remove all non-alphanumeric characters
     message = re.sub(r'\W+', ' ', message)
@@ -41,8 +42,9 @@ def build_bigram_prob(message):
             bigram_prob[word[i:i+2]] += 1
 
     ## add-one smoothing
-    for key in bigram_prob:
-        bigram_prob[key] += 1
+    for c1 in ascii_lowercase:
+        for c2 in ascii_lowercase:
+            bigram_prob[c1+c2] += 1
     return bigram_prob
 
 def build_unigram_prob(message):
@@ -51,9 +53,10 @@ def build_unigram_prob(message):
         n = len(word)
         for i in range(n):
             unigram_prob[word[i]] += 1
+
     ## add-one smoothing
-    for key in unigram_prob:
-        unigram_prob[key] += 1
+    for c1 in ascii_lowercase:
+        unigram_prob[c1] += 1
     return unigram_prob
 
 def bulid_initial_char_prob(message):
@@ -62,8 +65,8 @@ def bulid_initial_char_prob(message):
         initial_char_prob[word[0]] += 1
     return initial_char_prob
 
-def comp_log_prob(word):
-
+# def comp_log_prob(word):
+#     init_prob =
 
 
 ## language model
@@ -72,7 +75,8 @@ message = preprocessing(original_message)
 bigram_prob = build_bigram_prob(message)
 unigram_prob = build_unigram_prob(message)
 initial_char_prob = bulid_initial_char_prob(message)
-# print(bigram_prob)
-# print(unigram_prob)
-# print(initial_char_prob)
+
+print(bigram_prob)
+print(unigram_prob)
+print(initial_char_prob)
 
