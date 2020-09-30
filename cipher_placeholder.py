@@ -22,15 +22,17 @@
 # interested, but whose biographies I was compelled to listen to.
 # '''
 
-
-original_message = "I like cat"
-
+import math
 import re
 from collections import Counter
 from string import ascii_lowercase
+
+original_message = "I like cat"
+
 def preprocessing(message):
     ## remove all non-alphanumeric characters
     message = re.sub(r'\W+', ' ', message)
+    message = message.lower()
     message = message.split(' ')
     return message
 
@@ -41,10 +43,6 @@ def build_bigram_prob(message):
         for i in range(n-1):
             bigram_prob[word[i:i+2]] += 1
 
-    ## add-one smoothing
-    for c1 in ascii_lowercase:
-        for c2 in ascii_lowercase:
-            bigram_prob[c1+c2] += 1
     return bigram_prob
 
 def build_unigram_prob(message):
@@ -54,29 +52,52 @@ def build_unigram_prob(message):
         for i in range(n):
             unigram_prob[word[i]] += 1
 
-    ## add-one smoothing
-    for c1 in ascii_lowercase:
-        unigram_prob[c1] += 1
     return unigram_prob
 
 def bulid_initial_char_prob(message):
     initial_char_prob = Counter()
     for word in message:
         initial_char_prob[word[0]] += 1
+
     return initial_char_prob
 
-# def comp_log_prob(word):
-#     init_prob =
+def comp_log_prob(word):
+    c0 = word[0]
+    init_prob = (initial_char_prob[c0] + 1) / (total_init + V_init)
+    log_prob = math.log(init_prob)
+    for i in range(1, len(word)):
+        bigram = word[i-1:i+1]
+        print("bigram", bigram)
+        log_prob += math.log((bigram_prob[bigram]+1)/(unigram_prob[word[i]]+V_bigram))
+    return log_prob
+
+
+
 
 
 ## language model
 message = preprocessing(original_message)
-# print(message)
+print(message)
 bigram_prob = build_bigram_prob(message)
 unigram_prob = build_unigram_prob(message)
 initial_char_prob = bulid_initial_char_prob(message)
 
-print(bigram_prob)
-print(unigram_prob)
-print(initial_char_prob)
+V_bigram = 26*26
+V_unigram = 26
+V_init = 26
+## denominator for computing x(0)
+total_init = 0
+for _, v in initial_char_prob.items():
+    total_init += v
+
+
+
+print("bigram_prob", bigram_prob)
+print("unigram_prob", unigram_prob)
+print("initial_char_prob", initial_char_prob)
+# print(comp_log_prob('lik'))
+# print(comp_log_prob('ca'))
+# print(comp_log_prob('aa'))
+
+
 
