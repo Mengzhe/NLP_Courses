@@ -39,6 +39,10 @@ def build_bigram_prob(message):
         n = len(word)
         for i in range(n-1):
             bigram_prob[word[i:i+2]] += 1
+
+    ## add-one smoothing
+    for key in bigram_prob:
+        bigram_prob[key] += 1
     return bigram_prob
 
 def build_unigram_prob(message):
@@ -47,6 +51,9 @@ def build_unigram_prob(message):
         n = len(word)
         for i in range(n):
             unigram_prob[word[i]] += 1
+    ## add-one smoothing
+    for key in unigram_prob:
+        unigram_prob[key] += 1
     return unigram_prob
 
 def bulid_initial_char_prob(message):
@@ -54,6 +61,10 @@ def bulid_initial_char_prob(message):
     for word in message:
         initial_char_prob[word[0]] += 1
     return initial_char_prob
+
+def comp_log_prob(word):
+
+
 
 ## language model
 message = preprocessing(original_message)
@@ -64,5 +75,4 @@ initial_char_prob = bulid_initial_char_prob(message)
 # print(bigram_prob)
 # print(unigram_prob)
 # print(initial_char_prob)
-
 
