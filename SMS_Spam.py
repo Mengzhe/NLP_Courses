@@ -4,6 +4,11 @@ from sklearn.naive_bayes import MultinomialNB
 import pandas as pd
 import numpy as np
 import re
+from sklearn.utils import shuffle
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn import preprocessing
+from sklearn.model_selection import train_test_split
+
 # corpus = [
 #     'This is the first document.',
 #     'This document is the second document.',
@@ -28,29 +33,27 @@ for line in raw_text:
 def main(vectorizer):
     print("feature extractor", vectorizer.__class__.__name__)
     X = vectorizer.fit_transform(text)
-    # last 100 rows will be test
-    Xtrain = X[:-100,]
-    Ytrain = labels[:-100,]
-    Xtest = X[-100:,]
-    Ytest = labels[-100:,]
-
+    le = preprocessing.LabelEncoder()
+    le.fit(labels)
+    Y = le.transform(labels)
+    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.33, random_state=42)
+    # print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
 
     model = MultinomialNB()
-    model.fit(Xtrain, Ytrain)
-    print("Classification rate for NB:", model.score(Xtest, Ytest))
+    model.fit(X_train, y_train)
+    print("Classification rate for NB:", model.score(X_test, y_test))
 
 
-    from sklearn.ensemble import AdaBoostClassifier
 
     model = AdaBoostClassifier()
-    model.fit(Xtrain, Ytrain)
-    print("Classification rate for AdaBoost:", model.score(Xtest, Ytest))
+    model.fit(X_train, y_train)
+    print("Classification rate for AdaBoost:", model.score(X_test, y_test))
 
 
 
 # vectorizer = CountVectorizer()
 # vectorizer = TfidfVectorizer()
 
-main(CountVectorizer())
+main(CountVectorizer(decode_error='ignore'))
 print('')
-main(TfidfVectorizer())
+main(TfidfVectorizer(decode_error='ignore'))
